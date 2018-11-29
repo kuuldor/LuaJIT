@@ -327,7 +327,7 @@ ifeq (Darwin,$(TARGET_SYS))
 else
 ifeq (iOS,$(TARGET_SYS))
   TARGET_STRIP+= -x
-  TARGET_XSHLDFLAGS= -dynamiclib -single_module -undefined dynamic_lookup -fPIC
+  TARGET_XSHLDFLAGS= -dynamiclib -single_module -fPIC
   TARGET_DYNXLDOPTS=
   TARGET_XSHLDFLAGS+= -install_name $(TARGET_DYLIBPATH) -compatibility_version $(MAJVER).$(MINVER) -current_version $(MAJVER).$(MINVER).$(RELVER)
   ifeq (arm64,$(TARGET_LJARCH))
