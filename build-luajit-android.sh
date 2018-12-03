@@ -8,6 +8,12 @@ if [ ! -e $DEST_DIR ]; then
 	mkdir -p $DEST_DIR
 fi
 
+DISABLE_JIT_FLAG="-DLUAJIT_DISABLE_JIT"
+
+EXTRA_LUA_JIT_CFLAG="$DISABLE_JIT_FLAG"
+
+BUILD_TARGET=amalg
+
 #android-x86
 make clean
 NDK=~/Library/Android/sdk/ndk-bundle/
@@ -19,7 +25,7 @@ NDKF="-isystem $NDK/sysroot/usr/include/i686-linux-android -D__ANDROID_API__=$ND
 NDK_SYSROOT_BUILD=$NDK/sysroot
 NDK_SYSROOT_LINK=$NDK/platforms/android-$NDKABI/arch-x86
 
-make HOST_CC="gcc -m32" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD"
+make HOST_CC="gcc -m32" CFLAGS="$EXTRA_LUA_JIT_CFLAG" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD" $BUILD_TARGET
 
 mkdir -p $DEST_LIB_DIR/x86/
 mv ./src/libluajit.a "$DEST_LIB_DIR/x86/libluajit.a"
@@ -37,7 +43,7 @@ NDKF="-isystem $NDK/sysroot/usr/include/$NDKTRIPLE -D__ANDROID_API__=$NDKABI -D_
 NDK_SYSROOT_BUILD=$NDK/sysroot
 NDK_SYSROOT_LINK=$NDK/platforms/android-$NDKABI/arch-arm
 
-make HOST_CC="gcc -m32" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD"
+make HOST_CC="gcc -m32" CFLAGS="$EXTRA_LUA_JIT_CFLAG" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD" $BUILD_TARGET
 
 mkdir -p $DEST_LIB_DIR/armeabi/
 mv ./src/libluajit.a "$DEST_LIB_DIR/armeabi/libluajit.a"
@@ -55,7 +61,7 @@ NDKF="-isystem $NDK/sysroot/usr/include/$NDKTRIPLE -D__ANDROID_API__=$NDKABI -D_
 NDK_SYSROOT_BUILD=$NDK/sysroot
 NDK_SYSROOT_LINK=$NDK/platforms/android-$NDKABI/arch-arm
 NDKARCH="-march=armv7-a -mfloat-abi=softfp"
-make HOST_CC="gcc -m32" CROSS=$NDKP TARGET_FLAGS="$NDKF $NDKARCH" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD"
+make HOST_CC="gcc -m32" CFLAGS="$EXTRA_LUA_JIT_CFLAG" CROSS=$NDKP TARGET_FLAGS="$NDKF $NDKARCH" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD" $BUILD_TARGET
 
 mkdir -p $DEST_LIB_DIR/armeabi-v7a/
 mv ./src/libluajit.a "$DEST_LIB_DIR/armeabi-v7a/libluajit.a"
@@ -74,7 +80,7 @@ NDKF="-isystem $NDK/sysroot/usr/include/$NDKTRIPLE -D__ANDROID_API__=$NDKABI"
 NDK_SYSROOT_BUILD=$NDK/sysroot
 NDK_SYSROOT_LINK=$NDK/platforms/android-$NDKABI/arch-arm64
 
-make HOST_CC="gcc" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD"
+make HOST_CC="gcc" CFLAGS="$EXTRA_LUA_JIT_CFLAG" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD" $BUILD_TARGET
 
 mkdir -p $DEST_LIB_DIR/arm64-v8a/
 mv ./src/libluajit.a "$DEST_LIB_DIR/arm64-v8a/libluajit.a"
@@ -92,7 +98,7 @@ NDKF="-isystem $NDK/sysroot/usr/include/x86_64-linux-android -D__ANDROID_API__=$
 NDK_SYSROOT_BUILD=$NDK/sysroot
 NDK_SYSROOT_LINK=$NDK/platforms/android-$NDKABI/arch-x86_64
 
-make HOST_CC="gcc" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD"
+make HOST_CC="gcc" CFLAGS="$EXTRA_LUA_JIT_CFLAG -DLUAJIT_ENABLE_GC64" CROSS=$NDKP TARGET_FLAGS="$NDKF" TARGET_SYS=Linux TARGET_CFLAGS="--sysroot $NDK_SYSROOT_BUILD" $BUILD_TARGET
 
 mkdir -p $DEST_LIB_DIR/x86_64/
 mv ./src/libluajit.a "$DEST_LIB_DIR/x86_64/libluajit.a"

@@ -13,6 +13,8 @@ DEST_DIR=$LIB_DIR/ios
 DEST_LIB_DIR=$DEST_DIR/lib
 DEST_INC_DIR=$DEST_DIR/include
 
+BUILD_TARGET=amalg
+
 if [ ! -e $DEST_DIR ]; then
 	mkdir -p $DEST_DIR
 fi
@@ -50,22 +52,23 @@ SDK_PATH=$XCODE_PATH/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS${SDKVER
 TC_PATH=$XCODE_PATH/Toolchains/XcodeDefault.xctoolchain/usr/bin/
 TARGET_FLAGS="-arch armv7 -isysroot $SDK_PATH -miphoneos-version-min=9.0 -fembed-bitcode"
 make clean
-make DEFAULT_CC="cc" HOST_CC="cc -m32 -arch i386" CROSS=$TC_PATH TARGET_FLAGS="$TARGET_FLAGS" \
-     TARGET_SYS=iOS
+make DEFAULT_CC="cc" CFLAGS="-DLUAJIT_DISABLE_JIT"  HOST_CC="cc -m32 -arch i386" CROSS=$TC_PATH TARGET_FLAGS="$TARGET_FLAGS" \
+     TARGET_SYS=iOS  $BUILD_TARGET
 mv src/libluajit.a $DEST_DIR/temp/libluajit-ios-armv7.a
 
 # Build for iOS device (arm64)
 TARGET_FLAGS="-arch arm64 -isysroot $SDK_PATH -miphoneos-version-min=9.0 -fembed-bitcode"
 make clean
-make DEFAULT_CC="cc"  HOST_CC="cc " CROSS=$TC_PATH TARGET=arm64 TARGET_FLAGS="$TARGET_FLAGS" \
-     TARGET_SYS=iOS
+make DEFAULT_CC="cc" CFLAGS="-DLUAJIT_DISABLE_JIT"  HOST_CC="cc " CROSS=$TC_PATH TARGET=arm64 TARGET_FLAGS="$TARGET_FLAGS" \
+     TARGET_SYS=iOS  $BUILD_TARGET
 mv src/libluajit.a $DEST_DIR/temp/libluajit-ios-arm64.a
 
 # Build for iOS simulator
 SDK_PATH=$XCODE_PATH/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${SDKVER}.sdk
 TARGET_FLAGS="-arch x86_64 -isysroot $SDK_PATH -miphoneos-version-min=9.0 -fembed-bitcode"
 make clean
-make  DEFAULT_CC="cc" CFLAGS="-DLJ_NO_SYSTEM=1 -DLUAJIT_ENABLE_GC64" HOST_CFLAGS="-arch x86_64" HOST_LDFLAGS="-arch x86_64" TARGET_SYS=iOS TARGET=x86_64 CROSS=$TC_PATH TARGET_FLAGS="$TARGET_FLAGS" 
+make  DEFAULT_CC="cc" CFLAGS="-DLJ_NO_SYSTEM=1 -DLUAJIT_ENABLE_GC64 -DLUAJIT_DISABLE_JIT" HOST_CFLAGS="-arch x86_64" \
+	HOST_LDFLAGS="-arch x86_64" TARGET_SYS=iOS TARGET=x86_64 CROSS=$TC_PATH TARGET_FLAGS="$TARGET_FLAGS"  $BUILD_TARGET
 mv src/libluajit.a $DEST_DIR/temp/libluajit-simulator.a
 
 # Combine all archives to one.
