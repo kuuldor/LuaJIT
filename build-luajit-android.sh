@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEST_DIR=`pwd`/../lib/luajit
+DEST_DIR=`pwd`/../lib/android
 DEST_LIB_DIR=$DEST_DIR/lib
 DEST_INC_DIR=$DEST_DIR/include
 
