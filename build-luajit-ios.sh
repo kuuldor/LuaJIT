@@ -13,6 +13,9 @@ DEST_DIR=$LIB_DIR/ios
 DEST_LIB_DIR=$DEST_DIR/lib
 DEST_INC_DIR=$DEST_DIR/include
 
+DISABLE_JIT_FLAG="-DLUAJIT_DISABLE_JIT"
+#EXTRA_LUA_JIT_CFLAG="$DISABLE_JIT_FLAG"
+
 BUILD_TARGET=amalg
 
 if [ ! -e $DEST_DIR ]; then
@@ -39,13 +42,16 @@ XCODE_PATH=`xcode-select -print-path`
 
 # Build for MacOS (x86_64) 32-bit
 make clean
-make
+make CFLAGS="${EXTRA_LUA_JIT_CFLAG}" 
 mv src/luajit $DEST_BIN_DIR/luajit-32
 
 # Build for MacOS (x86_64) 64-bit
 make clean
-make CFLAGS=-DLUAJIT_ENABLE_GC64
+make CFLAGS="${EXTRA_LUA_JIT_CFLAG} -DLUAJIT_ENABLE_GC64"
 mv src/luajit $DEST_BIN_DIR/luajit-64
+
+
+BUILD_TARGET=amalgslib
 
 # Build for iOS device (armv7)
 SDK_PATH=$XCODE_PATH/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS${SDKVER}.sdk

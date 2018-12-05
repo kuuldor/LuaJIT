@@ -71,10 +71,10 @@ CCWARN= -Wall
 # as dynamic mode.
 #
 # Mixed mode creates a static + dynamic library and a statically linked luajit.
-BUILDMODE= mixed
+#BUILDMODE= mixed
 #
 # Static mode creates a static library and a statically linked luajit.
-#BUILDMODE= static
+BUILDMODE= static
 #
 # Dynamic mode creates a dynamic library and a dynamically linked luajit.
 # Note: this executable will only run when the library is installed!
@@ -501,6 +501,7 @@ LIB_VMDEF= jit/vmdef.lua
 LIB_VMDEFP= $(LIB_VMDEF)
 
 LUAJIT_O= luajit.o
+LUA_CLIB_DYN_O= lj_clib_dynamic.o
 LUAJIT_A= libluajit.a
 LUAJIT_SO= libluajit.so
 LUAJIT_T= luajit
@@ -601,6 +602,13 @@ amalg:
 	@grep "^[+|]" ljamalg.c
 	$(MAKE) all "LJCORE_O=ljamalg.o"
 
+staticlib: $(LUAJIT_A)
+	
+	
+amalgslib:
+	@grep "^[+|]" ljamalg.c
+	$(MAKE) staticlib "LJCORE_O=ljamalg.o"
+
 clean:
 	$(HOST_RM) $(ALL_RM)
 
@@ -622,7 +630,7 @@ depend:
 	  test -s $$file || $(HOST_RM) $$file; \
 	  done
 
-.PHONY: default all amalg clean libbc depend
+.PHONY: default all amalg clean libbc depend amalglib staticlib
 
 ##############################################################################
 # Rules for generated files.
@@ -688,6 +696,10 @@ $(LUAJIT_O):
 	$(E) "CC        $@"
 	$(Q)$(TARGET_STCC) $(TARGET_ACFLAGS) -c -o $@ $<
 
+$(LUA_CLIB_DYN_O):
+	$(E) "CC        $@"
+	$(Q)$(TARGET_STCC) $(TARGET_ACFLAGS) -c -o $@ $<
+
 $(HOST_O): %.o: %.c
 	$(E) "HOSTCC    $@"
 	$(Q)$(HOST_CC) $(HOST_ACFLAGS) -c -o $@ $<
@@ -708,9 +720,9 @@ $(LUAJIT_SO): $(LJVMCORE_O)
 	$(Q)$(TARGET_LD) $(TARGET_ASHLDFLAGS) -o $@ $(LJVMCORE_DYNO) $(TARGET_ALIBS)
 	$(Q)$(TARGET_STRIP) $@
 
-$(LUAJIT_T): $(TARGET_O) $(LUAJIT_O) $(TARGET_DEP)
+$(LUAJIT_T): $(TARGET_O) $(LUAJIT_O) $(LUA_CLIB_DYN_O) $(TARGET_DEP)
 	$(E) "LINK      $@"
-	$(Q)$(TARGET_LD) $(TARGET_ALDFLAGS) -o $@ $(LUAJIT_O) $(TARGET_O) $(TARGET_ALIBS)
+	$(Q)$(TARGET_LD) $(TARGET_ALDFLAGS) -o $@ $(LUAJIT_O) $(LUA_CLIB_DYN_O) $(TARGET_O) $(TARGET_ALIBS)
 	$(Q)$(TARGET_STRIP) $@
 	$(E) "OK        Successfully built LuaJIT"
 

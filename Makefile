@@ -158,6 +158,14 @@ amalg:
 	@echo "Building LuaJIT $(VERSION)"
 	$(MAKE) -C src amalg
 
+amalgslib:
+	@echo "Building LuaJIT $(VERSION)"
+	$(MAKE) -C src amalgslib
+	
+staticlib:
+	@echo "Building LuaJIT $(VERSION)"
+	$(MAKE) -C src staticlib
+	
 clean:
 	$(MAKE) -C src clean
 
